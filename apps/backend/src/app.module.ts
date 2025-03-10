@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ESGRecord } from './esg/esg.entity';
+import { ESGModule } from './esg/esg.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: '', // Sesuaikan dengan MySQL Anda
+      database: 'esg_db',
+      entities: [ESGRecord],
+      synchronize: true, // Jangan gunakan ini di production!
+    }),
+    ESGModule,
+  ],
 })
-export class AppModule {}
+export class AppModule { }
