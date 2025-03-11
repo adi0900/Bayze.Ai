@@ -1,6 +1,7 @@
+import Link from "next/link";
 import React from "react";
 
-function Page() {
+export default async function Page() {
   return (
     <div className="relative flex flex-col items-center h-screen w-full bg-gradient-to-b from-[#0C0B0A] to-[#180c22] text-white overflow-hidden px-[5%]">
       <header className="w-full flex justify-between items-center p-4 gap-16">
@@ -15,11 +16,15 @@ function Page() {
             About
           </a>
         </nav>
-        <div className="flex space-x-4">
-          <button className="hover:underline">LOGIN</button>
-          <button className="flex justify-center items-center bg-[linear-gradient(192.58deg,rgba(124,124,124,0.3)47.99%,rgba(167,248,24,0.4)94.9%)] px-4 py-2 rounded-full">
-            SIGN UP
-          </button>
+        <div className="flex space-x-4 items-center">
+          <Link href={"/signin"} legacyBehavior>
+            <a className="hover:underline cursor-pointer">LOGIN</a>
+          </Link>
+          <Link href={"/signup"} legacyBehavior>
+            <a className="flex justify-center items-center bg-[linear-gradient(192.58deg,rgba(124,124,124,0.3)47.99%,rgba(167,248,24,0.4)94.9%)] px-4 py-2 rounded-full cursor-pointer">
+              SIGN UP
+            </a>
+          </Link>
         </div>
       </header>
       <main className="flex flex-col items-start text-center mt-24 w-full p-4">
@@ -54,5 +59,3 @@ function Page() {
     </div>
   );
 }
-
-export default Page;

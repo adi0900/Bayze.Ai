@@ -1,14 +1,53 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useSupabaseClient } from "@bayez/supabaseClient"; // Correct the import path
+import GoogleSignIn from "./GoogleSignIn"; // Import the GoogleSignIn component
+
+async function handleSignin(supabase: any, email: string, password: string) {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  return error;
+}
 
 function Page() {
+  const supabase = useSupabaseClient(); // Use the Supabase client hook
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      if (accessToken) {
+        // Store the access token and redirect to the dashboard
+        localStorage.setItem("access_token", accessToken);
+        window.location.href = "/dashboard";
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const error = await handleSignin(supabase, email, password);
+    if (error) {
+      console.error("Sign in failed: " + error.message);
+    } else {
+      window.location.href = "/dashboard";
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black to-purple-900">
-      <div className="bg-black bg-opacity-50 p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-[#0A0B0A]">
+      <div className="bg-[#1A1A1A66] bg-opacity-50 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-4xl font-bold text-center text-white mb-8">
           Welcome !
         </h1>
         <h2 className="text-xl text-center text-white mb-4">Login</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-white mb-2" htmlFor="email">
               Email address
@@ -18,6 +57,8 @@ function Page() {
               type="email"
               id="email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -30,6 +71,8 @@ function Page() {
               type="password"
               id="password"
               name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <span className="absolute right-2 top-9 text-gray-400 cursor-pointer">
@@ -55,22 +98,18 @@ function Page() {
           </button>
         </form>
         <div className="mt-6">
-          <button className="w-full p-2 rounded bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
-            Sign Up
+          <button className="mx-auto flex justify-center items-center w-full p-0.5 rounded bg-gradient-to-b from-[#666666] to-[#CCCCCC] border border-[linear-gradient('to-bottom', #666666, #CCCCCC )] text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+            <div className="flex justify-center items-center bg-gradient-to-b from-[#360342] to-[#CF18F8] h-8 w-full rounded leading-none">
+              <p>Sign In</p>
+            </div>
           </button>
         </div>
         <div className="mt-4 text-center text-white">
-          or <span className="text-purple-600">Sign up with</span>
+          or <span className="text-purple-600">Sign In with</span>
         </div>
+        {/* Use the GoogleSignIn component */}
         <div className="mt-4">
-          <button className="w-full p-2 rounded bg-white text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-600 flex items-center justify-center">
-            <img
-              src="https://img.icons8.com/color/16/000000/google-logo.png"
-              alt="Google logo"
-              className="mr-2"
-            />
-            Log In with Google
-          </button>
+          <GoogleSignIn />
         </div>
         <div className="mt-4 text-center text-white">
           Already a Member?{" "}
